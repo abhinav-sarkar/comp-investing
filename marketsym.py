@@ -13,8 +13,11 @@ import QSTK.qstkstudy.EventProfiler as ep
 
 def main():
   cash = sys.argv[1]
-  orders_file = open(sys.argv[2]).read()
-  orders = csv.DictReader(orders_file.splitlines(), fieldnames=('year', 'month' , 'day', 'symbol', 'action', 'units'))
+  orders_csv = None
+  with open(sys.argv[2]) as f:
+  	orders_csv = f.read()
+
+  orders = csv.DictReader(orders_csv.splitlines(), fieldnames=('year', 'month' , 'day', 'symbol', 'action', 'units'))
   
   for row in orders:
     row['datetime'] = dt.datetime(int(row['year']), int(row['month']), int(row['day']))
