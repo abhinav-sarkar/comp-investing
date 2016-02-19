@@ -17,16 +17,11 @@ def main():
   with open(sys.argv[2]) as f:
   	orders_csv = f.read()
 
-  orders = csv.DictReader(orders_csv.splitlines(), fieldnames=('year', 'month' , 'day', 'symbol', 'action', 'units'))
-  
-  for row in orders:
+  orders_csv_reader = csv.DictReader(orders_csv.splitlines(), fieldnames=('year', 'month' , 'day', 'symbol', 'action', 'units'))
+  orders = list()
+  for row in orders_csv_reader:
     row['datetime'] = dt.datetime(int(row['year']), int(row['month']), int(row['day']))
-
-  for row in orders:
-    print row
-
-
-
+    orders.append(row)
 
 if __name__ == '__main__':
 	main()
