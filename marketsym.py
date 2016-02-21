@@ -10,6 +10,21 @@ import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
 import copy
 
+def adddatetime(data):
+	timestamps = data.index
+	data.loc[:,'Year'] = np.zeros((len(timestamps), 1))
+	data.loc[:,'Month'] = np.zeros((len(timestamps), 1))
+	data.loc[:,'Day'] = np.zeros((len(timestamps), 1))
+	print data
+	raw_input()
+	for i in range(0, len(timestamps)):
+		data['Year'].ix[timestamps[i]] = timestamps[i].year
+		data['Month'].ix[timestamps[i]] = timestamps[i].month
+		data['Day'].ix[timestamps[i]] = timestamps[i].day
+
+	print data
+	return data
+
 def initialize_dataframe(timestamps, symbols):
 	data = np.zeros((len(timestamps), len(symbols)))
 	ldf_portfolio = pd.DataFrame(
@@ -89,7 +104,7 @@ def main():
 	values['StockValues'] = stockvalues.sum(axis=1)
 	values['Cash'] = ldf_cash['Cash']
 	values['Total'] = values.sum(axis=1)
-	print values
+	adddatetime(values)
 
 
 if __name__ == '__main__':
