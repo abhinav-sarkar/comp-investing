@@ -11,9 +11,6 @@ import QSTK.qstkstudy.EventProfiler as ep
 import copy
 
 def initialize_dataframe(timestamps, symbols):
-	symbols.append('Year')
-	symbols.append('Month')
-	symbols.append('Day')
 	data = np.zeros((len(timestamps), len(symbols)))
 	ldf_portfolio = pd.DataFrame(
 		data,
@@ -88,7 +85,7 @@ def main():
 					ldf_portfolio[eventsymbol].ix[ldt_timestamps[i]] = int(ldf_portfolio[eventsymbol].ix[ldt_timestamps[i]]) - eventunits
 
 	stockvalues = prices*ldf_portfolio
-	values = pd.DataFrame()
+	values = initialize_dataframe(ldt_timestamps, ['StockValues'])
 	values['StockValues'] = stockvalues.sum(axis=1)
 	values['Cash'] = ldf_cash['Cash']
 	values['Total'] = values.sum(axis=1)
