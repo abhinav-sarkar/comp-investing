@@ -10,19 +10,15 @@ import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
 import copy
 
-def adddatetime(data):
-	timestamps = data.index
-	data.loc[:,'Year'] = np.zeros((len(timestamps), 1))
-	data.loc[:,'Month'] = np.zeros((len(timestamps), 1))
-	data.loc[:,'Day'] = np.zeros((len(timestamps), 1))
-	print data
-	raw_input()
-	for i in range(0, len(timestamps)):
-		data['Year'].ix[timestamps[i]] = timestamps[i].year
-		data['Month'].ix[timestamps[i]] = timestamps[i].month
-		data['Day'].ix[timestamps[i]] = timestamps[i].day
-
-	print data
+def add_datetime(data):
+	timestamps = list(data.index)
+	test = pd.DataFrame(
+		timestamps,
+		columns=["test"],
+		index = timestamps)
+	data['Year'] = test.applymap(lambda x: x.year)
+	data['Month'] = test.applymap(lambda x: x.month)
+	data['Day'] = test.applymap(lambda x: x.day)
 	return data
 
 def initialize_dataframe(timestamps, symbols):
@@ -104,8 +100,10 @@ def main():
 	values['StockValues'] = stockvalues.sum(axis=1)
 	values['Cash'] = ldf_cash['Cash']
 	values['Total'] = values.sum(axis=1)
-	adddatetime(values)
-
+	add_datetime(values)
+	values.to_csv('output.csv',
+		columns=('Year', 'Month', 'Day', 'Total'),
+		index=False)
 
 if __name__ == '__main__':
 	main()
