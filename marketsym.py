@@ -103,7 +103,8 @@ def main():
 	add_datetime(values)
 	values.to_csv('output.csv',
 		columns=('Year', 'Month', 'Day', 'Total'),
-		index=False)
+		index=False,
+		header=False)
 
 if __name__ == '__main__':
 	main()
