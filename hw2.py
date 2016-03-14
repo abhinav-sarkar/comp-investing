@@ -79,7 +79,7 @@ if __name__ == '__main__':
         for price in [5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
             df_events = find_events(ls_symbols, d_data, price)
             print "Creating Study data - %s, price - %f" % (data, price)
-            filename = "EventStudy\EventStudy-%s-%s.pdf" % (data, str(price))
+            filename = "EventStudy-%s-%s.pdf" % (data, str(price))
             ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
                 s_filename=filename, b_market_neutral=True, b_errorbars=True,
                 s_market_sym='SPY')

@@ -25,9 +25,7 @@ nan = no information about any event.
 1 = status bit(positively confirms the event occurence)
 """
 
-orders = list();
-
-def find_events(ls_symbols, d_data, p):
+def find_events(ls_symbols, d_data, p, orders):
     ''' Finding the event dataframe '''
     df_close = d_data['actual_close']
     ts_market = df_close['SPY']
@@ -56,7 +54,7 @@ def find_events(ls_symbols, d_data, p):
             if f_symprice_today < p and f_symprice_yest >= p:
                 df_events[s_sym].ix[ldt_timestamps[i]] = 1
                 orders.append([ldt_timestamps[i], s_sym, 'Buy', 100])
-                orders.append([ldt_timestamps[i+5], s_sym, 'Sell', 100])
+                orders.append([ldt_timestamps[min(i+5,len(ldt_timestamps)-1)], s_sym, 'Sell', 100])
 
     return df_events
 
@@ -81,15 +79,15 @@ if __name__ == '__main__':
             d_data[s_key] = d_data[s_key].fillna(method='bfill')
             d_data[s_key] = d_data[s_key].fillna(1.0)
 
-        #for price in [5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
-        for price in [5.0]:
-            df_events = find_events(ls_symbols, d_data, price)
-            with open('market_orders.csv', 'w') as a:
+        for price in [5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
+            orders = list();
+            df_events = find_events(ls_symbols, d_data, price, orders)
+            with open('market-orders-%s.csv' % price, 'w') as a:
                 for t in sorted(orders, key=itemgetter(0)):
                     a.write("%s,%s,%s,%s,%s,%s,\n" % (t[0].year, t[0].month, t[0].day, t[1], t[2], t[3]))
 
             print "Creating Study data - %s, price - %f" % (data, price)
-            filename = "EventStudy\EventStudy-%s-%s.pdf" % (data, str(price))
+            filename = "EventStudy-%s-%s.pdf" % (data, str(price))
             ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
                 s_filename=filename, b_market_neutral=True, b_errorbars=True,
                 s_market_sym='SPY')

@@ -101,7 +101,7 @@ def main():
 	values['Cash'] = ldf_cash['Cash']
 	values['Total'] = values.sum(axis=1)
 	add_datetime(values)
-	values.to_csv('output.csv',
+	values.to_csv(sys.argv[3],
 		columns=('Year', 'Month', 'Day', 'Total'),
 		index=False,
 		header=False)
