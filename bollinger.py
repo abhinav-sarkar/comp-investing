@@ -9,16 +9,12 @@ import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
 from operator import itemgetter
 
-def make_bollinger_band(ls_symbols, d_data):
-    ''' Finding the event dataframe '''
-    df_close = d_data['actual_close']
-    ts_market = df_close['SPY']
-
-    print "Finding Events - %f" % p
-
-    # Creating an empty dataframe
-    df_events = copy.deepcopy(df_close)
-    df_events = df_events * np.NAN
+def make_bollinger_band(d_data):
+    
+     = copy.deepcopy(d_data)
+    df_data['min'] = copy.deepcopy(df_close)
+    print df_data
+    raw_input()
 
     # Time stamps for the event range
     ldt_timestamps = df_close.index
@@ -60,17 +56,4 @@ if __name__ == '__main__':
         d_data[s_key] = d_data[s_key].fillna(method='bfill')
         d_data[s_key] = d_data[s_key].fillna(1.0)
 
-    
-
-    for price in [5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
-        orders = list();
-        df_events = find_events(ls_symbols, d_data, price, orders)
-        with open('market-orders-%s.csv' % price, 'w') as a:
-            for t in sorted(orders, key=itemgetter(0)):
-                a.write("%s,%s,%s,%s,%s,%s,\n" % (t[0].year, t[0].month, t[0].day, t[1], t[2], t[3]))
-
-        print "Creating Study data - %s, price - %f" % (data, price)
-        filename = "EventStudy-%s-%s.pdf" % (data, str(price))
-        ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-            s_filename=filename, b_market_neutral=True, b_errorbars=True,
-            s_market_sym='SPY')
+    make_bollinger_band(d_data['close']['GOOG'])
