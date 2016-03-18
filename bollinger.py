@@ -8,39 +8,42 @@ import QSTK.qstkutil.DataAccess as da
 import QSTK.qstkutil.tsutil as tsu
 import QSTK.qstkstudy.EventProfiler as ep
 from operator import itemgetter
+import matplotlib.pyplot as plt
+
+def initialize_dataframe(timestamps, symbols):
+    data = np.zeros((len(timestamps), len(symbols)))
+    ldf_portfolio = pd.DataFrame(
+        data,
+        columns=symbols,
+        index=timestamps)
+    return ldf_portfolio
 
 def make_bollinger_band(d_data):
+    data = initialize_dataframe(d_data.keys(), ['price', 'rmean', 'rstd'])
+    data['price'] = d_data
+    data['rmean'] = pd.rolling_mean(d_data, window=20);
+    data['rstd'] = pd.rolling_std(d_data, window=20);
+
+    pdata = initialize_dataframe(d_data.keys(), ['price', 'mean', 'upper', 'lower'])
+    pdata['price'] = data['price']
+    pdata['mean'] = data['rmean']
+    pdata['lower'] = data['rmean'] - 2*data['rstd']
+    pdata['upper'] = data['rmean'] + 2*data['rstd']
+
+    pdata['bollv'] = (data['price']-data['rmean'])/data['rstd']
     
-     = copy.deepcopy(d_data)
-    df_data['min'] = copy.deepcopy(df_close)
-    print df_data
-    raw_input()
-
-    # Time stamps for the event range
-    ldt_timestamps = df_close.index
-
-    for s_sym in ls_symbols:
-        for i in range(1, len(ldt_timestamps)):
-            # Calculating the returns for this timestamp
-            f_symprice_today = df_close[s_sym].ix[ldt_timestamps[i]]
-            f_symprice_yest = df_close[s_sym].ix[ldt_timestamps[i - 1]]
-            f_marketprice_today = ts_market.ix[ldt_timestamps[i]]
-            f_marketprice_yest = ts_market.ix[ldt_timestamps[i - 1]]
-            f_symreturn_today = (f_symprice_today / f_symprice_yest) - 1
-            f_marketreturn_today = (f_marketprice_today / f_marketprice_yest) - 1
-
-            # Event is found if the symbol is down more then 3% while the
-            # market is up more then 2%
-            if f_symprice_today < p and f_symprice_yest >= p:
-                df_events[s_sym].ix[ldt_timestamps[i]] = 1
-                orders.append([ldt_timestamps[i], s_sym, 'Buy', 100])
-                orders.append([ldt_timestamps[min(i+5,len(ldt_timestamps)-1)], s_sym, 'Sell', 100])
-
-    return df_events
+    plt.clf()
+    plt.plot(d_data.keys(), pdata)
+    plt.legend(['price', 'mean', 'upper', 'lower'])
+    plt.ylabel('price')
+    plt.xlabel('Date')
+    plt.savefig('bollinger.pdf', format='pdf')
+    print pdata
+    return pdata
 
 
 if __name__ == '__main__':
-    ls_symbols = ['GOOG']
+    ls_symbols = ['MSFT']
     dt_start = dt.datetime(2010, 1, 1)
     dt_end = dt.datetime(2010, 12, 31)
     ldt_timestamps = du.getNYSEdays(dt_start, dt_end, dt.timedelta(hours=16))
@@ -56,4 +59,15 @@ if __name__ == '__main__':
         d_data[s_key] = d_data[s_key].fillna(method='bfill')
         d_data[s_key] = d_data[s_key].fillna(1.0)
 
-    make_bollinger_band(d_data['close']['GOOG'])
+    data = make_bollinger_band(d_data['close']['MSFT'])
+    print "5/12"
+    print data.ix[dt.datetime(2010, 5, 12)+dt.timedelta(hours=16)]
+
+    print "5/21"
+    print data.ix[dt.datetime(2010, 5, 21)+dt.timedelta(hours=16)]
+
+    print "6/14"
+    print data.ix[dt.datetime(2010, 6, 14)+dt.timedelta(hours=16)]
+
+    print "6/23"
+    print data.ix[dt.datetime(2010, 6, 23)+dt.timedelta(hours=16)]
